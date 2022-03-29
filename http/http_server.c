@@ -483,6 +483,11 @@ void httpConnectionTask(void *param)
                //Access to the specified URI is allowed
                error = NO_ERROR;
             }
+            else if(connection->status == HTTP_ACCESS_DENIED)
+            {
+               //Access to the specified URI is denied
+               error = ERROR_ACCESS_DENIED;
+            }
             else if(connection->status == HTTP_ACCESS_BASIC_AUTH_REQUIRED)
             {
                //Basic access authentication is required
@@ -581,6 +586,13 @@ void httpConnectionTask(void *param)
                   //Send an error 401 and keep the connection alive
                   error = httpSendErrorResponse(connection, 401,
                      "Authorization required");
+               }
+               //Access denied
+               else if(error == ERROR_ACCESS_DENIED)
+               {
+                  //Send an error 403 and keep the connection alive
+                  error = httpSendErrorResponse(connection, 403,
+                     "Access denied");
                }
                //Page not found?
                else if(error == ERROR_NOT_FOUND)
